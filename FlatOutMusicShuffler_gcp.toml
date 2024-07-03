@@ -3,3 +3,4 @@
 
 [main]
 sequential = false			# Plays songs sequentially in the playlist order (this is the vanilla behavior)
+async = true				# Loads the next song on a separate thread (might be unstable, disable if you're getting crashes!)
