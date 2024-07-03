@@ -48,9 +48,10 @@ bool bLoadingSong = false;
 void OnSongEnd() {
 	if (pGame && !pGame->pMenuInterface && pGame->pRaceStruct) { // don't play race songs in menus
 		if (!bVanillaSongRotation) SelectNewSong();
+		StartSelectedSong();
+		nMusicPopupTimeOffset = pGame->pRaceStruct->nCurrentTick;
 	}
-	StartSelectedSong();
-	nMusicPopupTimeOffset = pGame->pRaceStruct->nCurrentTick;
+	else StartSelectedSong();
 	bLoadingSong = false;
 }
 
