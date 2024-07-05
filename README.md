@@ -5,7 +5,7 @@ Simple plugin to play multiple songs per race in FlatOut
 ## Installation
 
 - Make sure you have v1.1 of the game, as this is the only version this plugin is compatible with. (exe size of 2822144 bytes)
-- Plop the files into your game folder edit `FlatOutMusicShuffler_gcp.toml` to change the options to your liking.
+- Plop the files into your game folder, edit `FlatOutMusicShuffler_gcp.toml` to change the options to your liking.
 - Enjoy, nya~ :3
 
 ## Building
