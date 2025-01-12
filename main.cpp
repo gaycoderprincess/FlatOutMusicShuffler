@@ -4,22 +4,26 @@
 #include <random>
 #include <toml++/toml.hpp>
 #include "nya_commonhooklib.h"
+#include "../nya-common-fouc/fo2versioncheck.h"
 
 bool bVanillaSongRotation = false;
 bool bAsync = true;
 
-struct tRaceStruct {
+class PlayerHost {
+public:
 	uint8_t _0[0x1E24C];
-	uint32_t nCurrentTick; // 0x1E24C
+	uint32_t nRaceTime; // +1E24C
 };
+auto& pPlayerHost = *(PlayerHost**)0x68B7C0;
 
-struct tGameMain {
+class GameFlow {
+public:
 	uint8_t _0[0x2828];
-	tRaceStruct* pRaceStruct; // 0x2828
+	PlayerHost* pHost; // +2828
 	uint8_t _282C[0xC4];
-	void* pMenuInterface; // 0x28F0
+	void* pMenuInterface; // +28F0
 };
-auto& pGame = *(tGameMain**)0x6A7CE0;
+auto& pGameFlow = *(GameFlow**)0x6A7CE0;
 
 auto& nMusicPopupTimeOffset = *(int*)0x6BFFEC;
 auto& nCurrentPlaylistSongID = *(int*)0x6BFF68;
@@ -46,10 +50,10 @@ void SelectNewSong() {
 
 bool bLoadingSong = false;
 void OnSongEnd() {
-	if (pGame && !pGame->pMenuInterface && pGame->pRaceStruct) { // don't play race songs in menus
+	if (pGameFlow && !pGameFlow->pMenuInterface && pGameFlow->pHost) { // don't play race songs in menus
 		if (!bVanillaSongRotation) SelectNewSong();
 		StartSelectedSong();
-		nMusicPopupTimeOffset = pGame->pRaceStruct->nCurrentTick;
+		nMusicPopupTimeOffset = pGameFlow->pHost->nRaceTime;
 	}
 	else StartSelectedSong();
 	bLoadingSong = false;
@@ -78,10 +82,7 @@ void* __stdcall ResetSongPopupTimer(void* data, uint32_t flags, int a3, size_t s
 BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID) {
 	switch( fdwReason ) {
 		case DLL_PROCESS_ATTACH: {
-			if (NyaHookLib::GetEntryPoint() != 0x1E829F) {
-				MessageBoxA(nullptr, "Unsupported game version! Make sure you're using v1.1 (.exe size of 2822144 bytes)", "nya?!~", MB_ICONERROR);
-				return TRUE;
-			}
+			DoFlatOutVersionCheck(FO2Version::FO1_1_1);
 
 			auto config = toml::parse_file("FlatOutMusicShuffler_gcp.toml");
 			bVanillaSongRotation = config["main"]["sequential"].value_or(false);
